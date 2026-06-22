@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deal Screener · Clave Concept</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root{
+  --paper:#ECE8DF; --paper-2:#F4F1EA; --paper-line:#D8D2C5;
+  --ink:#1F2630; --ink-soft:#5C6470;
+  --panel:#131A25; --panel-2:#1B2433; --panel-line:rgba(255,255,255,.09);
+  --cream:#E9E5DB; --cream-soft:#9AA3B0;
+  --go:#43A98A; --warn:#D2A23A; --no:#CB5F45; --brass:#C9A24B;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{font-family:'IBM Plex Sans',system-ui,sans-serif;background:var(--paper);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+.mono{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums}
+
+/* demo banner */
+.demo-bar{background:var(--ink);color:var(--cream);text-align:center;font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.04em;padding:8px 14px}
+.demo-bar b{color:var(--brass);font-weight:600}
+
+.wrap{max-width:1180px;margin:0 auto;padding:26px 22px 56px}
+header.top{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;flex-wrap:wrap;padding-bottom:18px;margin-bottom:24px;border-bottom:1px solid var(--paper-line)}
+.brand{display:flex;align-items:baseline;gap:11px;margin-bottom:13px}
+.brand .mark{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px;letter-spacing:.14em;text-transform:uppercase}
+.brand .dot{width:6px;height:6px;border-radius:50%;background:var(--brass);align-self:center}
+.brand .sub{font-size:12px;color:var(--ink-soft);letter-spacing:.04em}
+.title-block h1{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(26px,4.4vw,40px);line-height:1.02;letter-spacing:-.01em}
+.title-block p{font-size:13.5px;color:var(--ink-soft);margin-top:6px;max-width:48ch}
+
+/* mode toggle */
+.modeswitch{display:inline-flex;background:var(--paper-2);border:1px solid var(--paper-line);border-radius:999px;padding:4px}
+.modeswitch button{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;letter-spacing:.02em;border:none;background:transparent;color:var(--ink-soft);padding:9px 18px;border-radius:999px;cursor:pointer;transition:.15s}
+.modeswitch button.on{background:var(--ink);color:var(--cream)}
+
+.grid{display:grid;grid-template-columns:1.05fr .95fr;gap:22px;align-items:start}
+@media(max-width:880px){.grid{grid-template-columns:1fr}}
+
+.worksheet{background:var(--paper-2);border:1px solid var(--paper-line);border-radius:14px;padding:20px 20px 22px}
+fieldset{border:none;margin-bottom:18px}
+fieldset:last-child{margin-bottom:0}
+legend{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);padding-bottom:10px;width:100%;border-bottom:1px solid var(--paper-line);margin-bottom:14px;display:flex;justify-content:space-between;align-items:baseline}
+legend .n{font-family:'IBM Plex Mono',monospace;color:var(--brass)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+.row.three{grid-template-columns:1fr 1fr 1fr}
+@media(max-width:480px){.row,.row.three{grid-template-columns:1fr 1fr}}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.field.wide{grid-column:1/-1}
+label{font-size:11.5px;color:var(--ink-soft);font-weight:500}
+.inp{position:relative;display:flex;align-items:center}
+.inp .pre,.inp .post{position:absolute;font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--ink-soft);pointer-events:none}
+.inp .pre{left:11px}.inp .post{right:11px}
+input[type=text],input[type=number]{width:100%;font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--ink);background:#fff;border:1px solid var(--paper-line);border-radius:8px;padding:9px 11px;font-variant-numeric:tabular-nums;transition:.15s}
+input.has-pre{padding-left:24px}
+input.has-post{padding-right:30px}
+input[type=text].txt{font-family:'IBM Plex Sans',sans-serif}
+input:focus{outline:none;border-color:var(--ink);box-shadow:0 0 0 3px rgba(31,38,48,.08)}
+input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+input[type=number]{-moz-appearance:textfield}
+
+details.adv{margin-top:6px;border-top:1px solid var(--paper-line);padding-top:14px}
+details.adv summary{cursor:pointer;list-style:none;font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);display:flex;align-items:center;gap:8px}
+details.adv summary::-webkit-details-marker{display:none}
+details.adv summary::before{content:"+";font-family:'IBM Plex Mono',monospace;color:var(--brass);font-size:14px}
+details.adv[open] summary::before{content:"–"}
+details.adv summary:hover{color:var(--ink)}
+.adv-body{padding-top:14px}
+.hold-only,.flip-only{display:none}
+body[data-mode=hold] .hold-only{display:block}
+body[data-mode=flip] .flip-only{display:block}
+body[data-mode=hold] fieldset.hold-only,body[data-mode=flip] fieldset.flip-only{display:block}
+
+/* panel */
+.panel{background:var(--panel);border-radius:14px;padding:24px 22px 22px;color:var(--cream);position:sticky;top:18px;box-shadow:0 18px 40px -24px rgba(19,26,37,.55)}
+@media(max-width:880px){.panel{position:static}}
+.stamp-zone{display:flex;flex-direction:column;align-items:center;text-align:center;padding:6px 0 20px;border-bottom:1px solid var(--panel-line);margin-bottom:20px}
+.stamp{position:relative;border:2.5px solid var(--brass);border-radius:12px;padding:14px 26px;transform:rotate(-2.4deg);box-shadow:inset 0 0 0 1px rgba(201,162,75,.35)}
+.stamp::after{content:"";position:absolute;inset:4px;border:1px solid rgba(201,162,75,.4);border-radius:8px}
+.stamp .verdict{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:34px;letter-spacing:.04em;line-height:1;color:var(--brass)}
+.stamp .micro{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.32em;text-transform:uppercase;color:rgba(233,229,219,.55);margin-top:7px}
+.stamp.go{border-color:var(--go)}.stamp.go::after{border-color:rgba(67,169,138,.45)}.stamp.go .verdict{color:var(--go)}
+.stamp.warn{border-color:var(--warn)}.stamp.warn::after{border-color:rgba(210,162,58,.45)}.stamp.warn .verdict{color:var(--warn)}
+.stamp.no{border-color:var(--no)}.stamp.no::after{border-color:rgba(203,95,69,.45)}.stamp.no .verdict{color:var(--no)}
+@keyframes press{0%{transform:rotate(-2.4deg) scale(1.18);opacity:0}60%{opacity:1}100%{transform:rotate(-2.4deg) scale(1);opacity:1}}
+.stamp.pressed{animation:press .32s cubic-bezier(.2,.8,.3,1)}
+@media(prefers-reduced-motion:reduce){.stamp.pressed{animation:none}}
+
+.headline{display:flex;gap:14px;margin-bottom:18px}
+.headline .hl{flex:1;background:var(--panel-2);border-radius:10px;padding:13px 14px}
+.headline .hl .k{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--cream-soft);margin-bottom:6px}
+.headline .hl .v{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:23px;letter-spacing:-.02em}
+.headline .hl .v.pos{color:var(--go)}.headline .hl .v.neg{color:var(--no)}
+
+.metrics{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--panel-line);border:1px solid var(--panel-line);border-radius:10px;overflow:hidden;margin-bottom:18px}
+.metric{background:var(--panel);padding:12px 14px}
+.metric .k{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--cream-soft)}
+.metric .v{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:18px;margin-top:5px}
+.metric .v small{font-size:11px;color:var(--cream-soft);font-weight:400}
+
+.section-lab{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--cream-soft);margin-bottom:12px}
+.buybox{border-top:1px solid var(--panel-line);padding-top:16px}
+.check{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--panel-line);font-size:13px}
+.check:last-child{border-bottom:none}
+.check .lhs{display:flex;align-items:center;gap:9px;color:var(--cream)}
+.check .ico{width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
+.check .ico.pass{background:rgba(67,169,138,.18);color:var(--go)}
+.check .ico.fail{background:rgba(203,95,69,.18);color:var(--no)}
+.check .rhs{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--cream-soft)}
+.check .rhs b{color:var(--cream);font-weight:600}
+
+.stress{border-top:1px solid var(--panel-line);padding-top:16px;margin-top:16px}
+.slider{margin-bottom:13px}
+.slider .sl-top{display:flex;justify-content:space-between;font-size:12px;color:var(--cream);margin-bottom:6px}
+.slider .sl-top .amt{font-family:'IBM Plex Mono',monospace;color:var(--brass);font-size:12px}
+input[type=range]{width:100%;-webkit-appearance:none;appearance:none;height:4px;border-radius:4px;background:var(--panel-2);outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;background:var(--brass);cursor:pointer;border:2px solid var(--panel)}
+input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;background:var(--brass);cursor:pointer;border:2px solid var(--panel)}
+.stress .reset{background:none;border:1px solid var(--panel-line);color:var(--cream-soft);font-family:'IBM Plex Mono',monospace;font-size:11px;padding:5px 12px;border-radius:6px;cursor:pointer;margin-top:2px}
+.stress .reset:hover{color:var(--cream);border-color:var(--cream-soft)}
+
+.exp-toggle{margin-top:16px}
+.exp-toggle summary{cursor:pointer;list-style:none;font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--cream-soft);display:flex;align-items:center;gap:8px}
+.exp-toggle summary::-webkit-details-marker{display:none}
+.exp-toggle summary::before{content:"+";font-family:'IBM Plex Mono',monospace;color:var(--brass)}
+.exp-toggle[open] summary::before{content:"–"}
+.exp-table{margin-top:12px;font-family:'IBM Plex Mono',monospace;font-size:12.5px}
+.exp-table .er{display:flex;justify-content:space-between;padding:5px 0;color:var(--cream-soft)}
+.exp-table .er.tot{border-top:1px solid var(--panel-line);margin-top:4px;padding-top:8px;color:var(--cream);font-weight:600}
+.exp-table .er span:last-child{color:var(--cream)}
+
+footer.disclaimer{margin-top:26px;font-size:11px;color:var(--ink-soft);line-height:1.65;border-top:1px solid var(--paper-line);padding-top:16px}
+footer.disclaimer .dt{font-family:'Space Grotesk',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);margin-bottom:8px}
+.formula{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--paper-2);border:1px solid var(--paper-line);border-radius:6px;padding:2px 6px;color:var(--ink-soft)}
+</style>
+</head>
+<body data-mode="hold">
+
+<div class="demo-bar"><b>DEMONSTRATION MODEL</b> · sample data shown · for capability display only, not for live investment decisions</div>
+
+<div class="wrap">
+  <header class="top">
+    <div class="title-block">
+      <div class="brand"><span class="mark">Clave Concept</span><span class="dot"></span><span class="sub">Acquisitions toolkit</span></div>
+      <h1>Deal Screener</h1>
+      <p>Single-family underwriting for buy-and-hold and fix-and-flip. Enter the numbers, get a go / no-go call against your own buy box.</p>
+    </div>
+    <div class="modeswitch">
+      <button id="m-hold" class="on" onclick="setMode('hold')">Buy &amp; Hold</button>
+      <button id="m-flip" onclick="setMode('flip')">Fix &amp; Flip</button>
+    </div>
+  </header>
+
+  <div class="grid">
+    <!-- WORKSHEET -->
+    <section class="worksheet">
+      <fieldset>
+        <legend><span>Property</span><span class="n">01</span></legend>
+        <div class="field wide"><label for="addr">Address</label><div class="inp"><input class="txt" type="text" id="addr"></div></div>
+        <div class="row three">
+          <div class="field"><label for="bedbath">Bed / Bath</label><div class="inp"><input class="txt" type="text" id="bedbath"></div></div>
+          <div class="field"><label for="sqft">Sq Ft</label><div class="inp"><input type="number" id="sqft"></div></div>
+          <div class="field"><label for="year">Year Built</label><div class="inp"><input type="number" id="year"></div></div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend><span>The Deal</span><span class="n">02</span></legend>
+        <div class="row">
+          <div class="field"><label for="purchase">Purchase Price</label><div class="inp"><span class="pre">$</span><input type="number" id="purchase" class="has-pre" oninput="calc()"></div></div>
+          <div class="field"><label for="arv">ARV (after-repair value)</label><div class="inp"><span class="pre">$</span><input type="number" id="arv" class="has-pre" oninput="calc()"></div></div>
+          <div class="field"><label for="rehab">Est. Rehab</label><div class="inp"><span class="pre">$</span><input type="number" id="rehab" class="has-pre" oninput="calc()"></div></div>
+          <div class="field"><label for="closing">Closing Costs (buy)</label><div class="inp"><span class="pre">$</span><input type="number" id="closing" class="has-pre" oninput="calc()"></div></div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend><span>Financing</span><span class="n">03</span></legend>
+        <div class="row three">
+          <div class="field"><label for="downPct">Down Payment</label><div class="inp"><input type="number" id="downPct" class="has-post" oninput="calc()"><span class="post">%</span></div></div>
+          <div class="field"><label for="rate">Interest Rate</label><div class="inp"><input type="number" id="rate" class="has-post" step="0.01" oninput="calc()"><span class="post">%</span></div></div>
+          <div class="field"><label for="term">Term (yrs)</label><div class="inp"><input type="number" id="term" oninput="calc()"></div></div>
+        </div>
+      </fieldset>
+
+      <!-- BUY & HOLD income/expenses -->
+      <fieldset class="hold-only">
+        <legend><span>Income &amp; Expenses</span><span class="n">04</span></legend>
+        <div class="row">
+          <div class="field"><label for="rent">Est. Rent / mo</label><div class="inp"><span class="pre">$</span><input type="number" id="rent" class="has-pre" oninput="calc()"></div></div>
+          <div class="field"><label for="taxes">Property Taxes / yr</label><div class="inp"><span class="pre">$</span><input type="number" id="taxes" class="has-pre" oninput="calc()"></div></div>
+          <div class="field"><label for="ins">Insurance / mo</label><div class="inp"><span class="pre">$</span><input type="number" id="ins" class="has-pre" oninput="calc()"></div></div>
+          <div class="field"><label for="hoa">HOA / yr</label><div class="inp"><span class="pre">$</span><input type="number" id="hoa" class="has-pre" oninput="calc()"></div></div>
+        </div>
+        <details class="adv">
+          <summary>Expense assumptions</summary>
+          <div class="adv-body row">
+            <div class="field"><label for="vacPct">Vacancy (% of rent)</label><div class="inp"><input type="number" id="vacPct" class="has-post" oninput="calc()"><span class="post">%</span></div></div>
+            <div class="field"><label for="repPct">Repairs / maint.</label><div class="inp"><input type="number" id="repPct" class="has-post" oninput="calc()"><span class="post">%</span></div></div>
+            <div class="field"><label for="capexPct">CapEx reserve</label><div class="inp"><input type="number" id="capexPct" class="has-post" oninput="calc()"><span class="post">%</span></div></div>
+            <div class="field"><label for="pmPct">Property mgmt</label><div class="inp"><input type="number" id="pmPct" class="has-post" oninput="calc()"><span class="post">%</span></div></div>
+          </div>
+        </details>
+      </fieldset>
+
+      <!-- FIX & FLIP costs -->
+      <fieldset class="flip-only">
+        <legend><span>Flip Costs</span><span class="n">04</span></legend>
+        <div class="row three">
+          <div class="field"><label for="holdMonths">Holding (months)</label><div class="inp"><input type="number" id="holdMonths" oninput="calc()"></div></div>
+          <div class="field"><label for="holdCost">Holding cost / mo</label><div class="inp"><span class="pre">$</span><input type="number" id="holdCost" class="has-pre" oninput="calc()"></div></div>
+          <div class="field"><label for="sellPct">Selling cost</label><div class="inp"><input type="number" id="sellPct" class="has-post" oninput="calc()"><span class="post">%</span></div></div>
+        </div>
+        <p style="font-size:11px;color:var(--ink-soft);margin-top:2px">Holding cost covers taxes, insurance, utilities and loan carry while you renovate and sell. Selling cost is agent commission plus sale closing (5 to 6% is typical).</p>
+      </fieldset>
+
+      <details class="adv">
+        <summary>Offer rule &amp; buy box</summary>
+        <div class="adv-body">
+          <div class="row">
+            <div class="field"><label for="offerPct">Max offer (% of ARV)</label><div class="inp"><input type="number" id="offerPct" class="has-post" oninput="calc()"><span class="post">%</span></div></div>
+          </div>
+          <div class="hold-only row three">
+            <div class="field"><label for="minCF">Min cash flow / mo</label><div class="inp"><span class="pre">$</span><input type="number" id="minCF" class="has-pre" oninput="calc()"></div></div>
+            <div class="field"><label for="minCoC">Min cash-on-cash</label><div class="inp"><input type="number" id="minCoC" class="has-post" oninput="calc()"><span class="post">%</span></div></div>
+            <div class="field"><label for="minCap">Min cap rate</label><div class="inp"><input type="number" id="minCap" class="has-post" oninput="calc()"><span class="post">%</span></div></div>
+          </div>
+          <div class="flip-only row">
+            <div class="field"><label for="minROI">Min flip ROI</label><div class="inp"><input type="number" id="minROI" class="has-post" oninput="calc()"><span class="post">%</span></div></div>
+            <div class="field"><label for="minProfit">Min net profit</label><div class="inp"><span class="pre">$</span><input type="number" id="minProfit" class="has-pre" oninput="calc()"></div></div>
+          </div>
+        </div>
+      </details>
+    </section>
+
+    <!-- PANEL -->
+    <section class="panel">
+      <div class="stamp-zone">
+        <div class="stamp" id="stamp"><div class="verdict" id="verdict">—</div><div class="micro" id="verdictMicro">awaiting inputs</div></div>
+      </div>
+
+      <div class="headline" id="headline"></div>
+      <div class="metrics" id="metrics"></div>
+
+      <div class="buybox">
+        <div class="section-lab">Buy-box check</div>
+        <div id="checks"></div>
+      </div>
+
+      <div class="stress">
+        <div class="section-lab">Pressure test</div>
+        <div class="slider"><div class="sl-top"><span>ARV</span><span class="amt" id="arvAmt">0%</span></div><input type="range" id="arvAdj" min="-20" max="20" value="0" oninput="calc()"></div>
+        <div class="slider"><div class="sl-top"><span>Rehab</span><span class="amt" id="rehabAmt">0%</span></div><input type="range" id="rehabAdj" min="-20" max="20" value="0" oninput="calc()"></div>
+        <div class="slider hold-only"><div class="sl-top"><span>Rent</span><span class="amt" id="rentAmt">0%</span></div><input type="range" id="rentAdj" min="-20" max="20" value="0" oninput="calc()"></div>
+        <button class="reset" onclick="resetStress()">Reset to base case</button>
+      </div>
+
+      <details class="exp-toggle">
+        <summary id="breakLabel">Monthly expense breakdown</summary>
+        <div class="exp-table" id="expTable"></div>
+      </details>
+    </section>
+  </div>
+
+  <footer class="disclaimer">
+    <div class="dt">Disclaimer</div>
+    This tool is a demonstration model built by Clave Concept to show analysis and build capability. The property and figures shown are sample data for illustration only. All outputs are estimates based on the assumptions you enter and are not guaranteed. This is not financial, legal, tax, or investment advice, and it is not a substitute for professional underwriting, an appraisal, or independent due diligence. Estimates of rent, expenses, ARV, cap rates, and returns may not be achieved. Verify every figure independently and consult a licensed real estate, financial, or legal professional before making any investment decision. Clave Concept assumes no liability for decisions made using this tool.
+  </footer>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const val=id=>parseFloat($(id).value)||0;
+const fmtUSD=n=>(n<0?"-$":"$")+Math.abs(Math.round(n)).toLocaleString();
+const fmtPct=n=>(n*100).toFixed(1)+"%";
+
+// fabricated sample deal (works in both modes)
+const SAMPLE={addr:"123 Example St, Anytown, USA",bedbath:"3/2",sqft:1600,year:2002,
+  purchase:145000,arv:215000,rehab:18000,closing:3000,
+  downPct:20,rate:7,term:30,
+  rent:1950,taxes:1800,ins:85,hoa:0,
+  vacPct:7,repPct:7,capexPct:7,pmPct:8,
+  holdMonths:6,holdCost:1007,sellPct:6,
+  offerPct:70,minCF:200,minCoC:8,minCap:6,minROI:15,minProfit:20000};
+
+function loadSample(){for(const k in SAMPLE)$(k).value=SAMPLE[k];}
+
+let mode='hold';
+function setMode(m){
+  mode=m;document.body.dataset.mode=m;
+  $('m-hold').classList.toggle('on',m==='hold');
+  $('m-flip').classList.toggle('on',m==='flip');
+  $('breakLabel').textContent = m==='hold'?'Monthly expense breakdown':'Flip cost breakdown';
+  calc();
+}
+
+function pmt(loan,annualPct,years){
+  const n=years*12, r=annualPct/100/12;
+  if(n<=0)return 0;
+  if(r===0)return loan/n;
+  return loan*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1);
+}
+
+let lastVerdict="";
+function calc(){
+  // stress adjustments
+  const aA=val('arvAdj'),rA=val('rehabAdj'),reA=val('rentAdj');
+  $('arvAmt').textContent=(aA>0?'+':'')+aA+'%';
+  $('rehabAmt').textContent=(rA>0?'+':'')+rA+'%';
+  $('rentAmt').textContent=(reA>0?'+':'')+reA+'%';
+
+  const purchase=val('purchase');
+  const arv=val('arv')*(1+aA/100);
+  const rehab=val('rehab')*(1+rA/100);
+  const closing=val('closing');
+  const downPct=val('downPct'),rate=val('rate'),term=val('term');
+  const loan=purchase*(1-downPct/100), down=purchase*(downPct/100);
+  const pi=pmt(loan,rate,term);
+  const offer=arv*(val('offerPct')/100)-rehab; // 70% rule MAO
+
+  let head=[],mets=[],checks=[],brk=[];
+  let v,micro,cls;
+
+  if(mode==='hold'){
+    const rent=val('rent')*(1+reA/100);
+    const mTax=val('taxes')/12, mHOA=val('hoa')/12, ins=val('ins');
+    const vac=rent*(val('vacPct')/100), rep=rent*(val('repPct')/100),
+          cap=rent*(val('capexPct')/100), pm=rent*(val('pmPct')/100);
+    const opex=mTax+mHOA+ins+vac+rep+cap+pm;
+    const totalExp=opex+pi;
+    const cf=rent-totalExp, annualCF=cf*12;
+    const noi=(rent*12)-(opex*12);
+    const capRate=purchase?noi/purchase:0;
+    const cashIn=down+closing+rehab;
+    const coc=cashIn?annualCF/cashIn:0;
+    const hasData=rent>0&&purchase>0;
+    const minCF=val('minCF'),minCoC=val('minCoC'),minCap=val('minCap');
+    const pCF=cf>=minCF,pCoC=coc*100>=minCoC,pCap=capRate*100>=minCap;
+
+    head=[['Monthly Cash Flow',fmtUSD(cf),cf>=0?'pos':'neg'],['Cash-on-Cash',fmtPct(coc),'']];
+    mets=[['Cap Rate',fmtPct(capRate)],['Net Operating Income',fmtUSD(noi)+' <small>/yr</small>'],
+      ['Total Cash In',fmtUSD(cashIn)],['Monthly P&I',fmtUSD(pi)],
+      ['Annual Cash Flow',fmtUSD(annualCF)],['70% Rule Max Offer',fmtUSD(offer)]];
+    checks=[ico(pCF)+row('Cash flow',fmtUSD(cf),'vs '+fmtUSD(minCF)),
+      ico(pCoC)+row('Cash-on-cash',fmtPct(coc),'vs '+minCoC.toFixed(1)+'%'),
+      ico(pCap)+row('Cap rate',fmtPct(capRate),'vs '+minCap.toFixed(1)+'%')];
+    brk=[['Mortgage (P&I)',pi],['Property taxes',mTax],['Insurance',ins],['HOA',mHOA],
+      ['Vacancy',vac],['Repairs / maint.',rep],['CapEx reserve',cap],['Property mgmt',pm]];
+    brk.tot=['Total monthly',totalExp];
+
+    if(!hasData){v='—';micro='awaiting inputs';cls='';}
+    else if(cf<0||(!pCF&&!pCoC&&!pCap)){v='PASS';micro='below buy box';cls='no';}
+    else if(pCF&&pCoC&&pCap){v='PURSUE';micro='clears buy box';cls='go';}
+    else if(pCF&&(pCoC||pCap)){v='ANALYZE';micro='partial / borderline';cls='warn';}
+    else{v='PASS';micro='below buy box';cls='no';}
+  } else {
+    const holdMonths=val('holdMonths'), holdCost=val('holdCost'), sellPct=val('sellPct');
+    const holdTotal=holdCost*holdMonths;
+    const sellCost=arv*(sellPct/100);
+    const projectCost=purchase+rehab+closing+holdTotal+sellCost;
+    const profit=arv-projectCost;
+    const cashIn=down+closing+rehab+holdTotal;
+    const roi=cashIn?profit/cashIn:0;
+    const annROI=holdMonths?roi*12/holdMonths:0;
+    const hasData=arv>0&&purchase>0;
+    const minROI=val('minROI'),minProfit=val('minProfit');
+    const pROI=roi*100>=minROI, pProfit=profit>=minProfit;
+
+    head=[['Net Profit',fmtUSD(profit),profit>=0?'pos':'neg'],['ROI on Cash',fmtPct(roi),'']];
+    mets=[['Annualized ROI',fmtPct(annROI)],['Cash Invested',fmtUSD(cashIn)],
+      ['70% Rule Max Offer',fmtUSD(offer)],['Total Project Cost',fmtUSD(projectCost)],
+      ['Selling Costs',fmtUSD(sellCost)],['Monthly P&I',fmtUSD(pi)]];
+    checks=[ico(pROI)+row('ROI on cash',fmtPct(roi),'vs '+minROI.toFixed(1)+'%'),
+      ico(pProfit)+row('Net profit',fmtUSD(profit),'vs '+fmtUSD(minProfit))];
+    brk=[['Purchase price',purchase],['Rehab',rehab],['Closing (buy)',closing],
+      ['Holding ('+holdMonths+' mo)',holdTotal],['Selling costs',sellCost]];
+    brk.tot=['Total project cost',projectCost];
+
+    if(!hasData){v='—';micro='awaiting inputs';cls='';}
+    else if(profit<=0||(!pROI&&!pProfit)){v='PASS';micro='below buy box';cls='no';}
+    else if(pROI&&pProfit){v='PURSUE';micro='clears buy box';cls='go';}
+    else{v='ANALYZE';micro='partial / borderline';cls='warn';}
+  }
+
+  // render
+  $('headline').innerHTML=head.map(h=>`<div class="hl"><div class="k">${h[0]}</div><div class="v mono ${h[2]}">${h[1]}</div></div>`).join('');
+  $('metrics').innerHTML=mets.map(m=>`<div class="metric"><div class="k">${m[0]}</div><div class="v mono">${m[1]}</div></div>`).join('');
+  $('checks').innerHTML=checks.join('');
+  $('expTable').innerHTML=brk.filter(r=>r[1]>0).map(r=>`<div class="er"><span>${r[0]}</span><span>${fmtUSD(r[1])}</span></div>`).join('')
+    +`<div class="er tot"><span>${brk.tot[0]}</span><span>${fmtUSD(brk.tot[1])}</span></div>`;
+
+  const stamp=$('stamp');
+  $('verdict').textContent=v;$('verdictMicro').textContent=micro;
+  stamp.className='stamp '+cls;
+  if(v!==lastVerdict&&v!=='—'){stamp.classList.remove('pressed');void stamp.offsetWidth;stamp.classList.add('pressed');}
+  lastVerdict=v;
+}
+function ico(p){return `<div class="check"><div class="lhs"><span class="ico ${p?'pass':'fail'}">${p?'✓':'✕'}</span>`;}
+function row(label,a,b){return `${label}</div><div class="rhs"><b>${a}</b> ${b}</div></div>`;}
+function resetStress(){$('arvAdj').value=0;$('rehabAdj').value=0;$('rentAdj').value=0;calc();}
+
+loadSample();
+calc();
+</script>
+</body>
+</html>
